@@ -1,24 +1,33 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
-import { ConfigModule, type ConfigService } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { GraphQLModule } from '@nestjs/graphql'
 import { MongooseModule } from '@nestjs/mongoose'
-import { type AppConfig, appConfig } from '~/config/app.config'
-import type { AllConfigType } from '~/config/config.type'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
+import { AuthModule } from '~/auth/auth.module'
+import { authConfig } from '~/auth/config/auth.config'
+import { AppConfig, appConfig } from '~/config/app.config'
+import { AllConfigType } from '~/config/config.type'
+
+const env = process.env.NODE_ENV || 'development'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: [`.env.${env}.local`, `.env.${env}`, `.env.local`, `.env`],
       isGlobal: true,
-      load: [appConfig],
+      load: [appConfig, authConfig],
     }),
     MongooseModule.forRootAsync({
+      inject: [ConfigService<AllConfigType>],
       useFactory: (configService: ConfigService<AllConfigType>) => ({
         uri: configService.get<AppConfig>('app').mongodbUri,
       }),
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+    }),
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

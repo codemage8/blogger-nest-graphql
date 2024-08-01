@@ -55,4 +55,6 @@
       "args": ["-i"]
     }
   },
+  "prettier.configPath": ".prettierrc.js",
+  "prettier.prettierPath": "./node_modules/prettier",
 }
