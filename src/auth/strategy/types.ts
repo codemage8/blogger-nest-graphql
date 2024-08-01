@@ -1,6 +1,7 @@
 import type { User } from '~/user/entities/user.entity'
 
-export interface JwtPayload extends Pick<User, '_id' | 'isAdmin'> {
+export interface JwtPayload extends Pick<User, 'isAdmin'> {
+  id: string
   sub: string
   sessionId: string
   iat: number

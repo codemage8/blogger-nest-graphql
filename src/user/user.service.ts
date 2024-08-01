@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model, ObjectId } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { bcryptHash } from '~/utils/bcrypt'
 import { CreateUserInput } from './dto/create-user-input'
 import { User, UserDocument } from './entities/user.entity'
@@ -23,7 +23,7 @@ export class UserService {
     return newUser.save()
   }
 
-  findById(id: ObjectId) {
+  findById(id: Types.ObjectId) {
     return this.userModel.findById(id)
   }
 
@@ -31,7 +31,7 @@ export class UserService {
     return this.userModel.findOne({ email }).exec()
   }
 
-  async update(id: ObjectId, input: CreateUserInput) {
+  async update(id: Types.ObjectId, input: CreateUserInput) {
     const newInput = { ...input }
 
     // Check the password existence
@@ -60,7 +60,7 @@ export class UserService {
     }
   }
 
-  delete(id: ObjectId) {
+  delete(id: Types.ObjectId) {
     return this.userModel.deleteOne({ _id: id })
   }
 }
