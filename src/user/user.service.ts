@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
 import { FilterQuery, Model, Types } from 'mongoose'
 import { title } from 'process'
+import { UpdateMeInput } from '~/auth/dto/update-me.input'
 import { AllConfigType } from '~/config/config.type'
 import { SearchUsersInput } from '~/user/dto/search-users.input'
 import { SearchUsersResponse } from '~/user/dto/search-users.response'
@@ -40,7 +41,7 @@ export class UserService {
     return this.userModel.findOne({ email }).exec()
   }
 
-  async update(id: Types.ObjectId | string, input: CreateUserInput) {
+  async update(id: Types.ObjectId | string, input: UpdateMeInput) {
     const newInput = { ...input }
 
     // Check the password existence

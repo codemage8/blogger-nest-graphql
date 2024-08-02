@@ -1,5 +1,5 @@
-import { InputType } from '@nestjs/graphql'
+import { InputType, OmitType } from '@nestjs/graphql'
 import { CreateUserInput } from '~/user/dto/create-user-input'
 
 @InputType()
-export class UpdateMeInput extends CreateUserInput {}
+export class UpdateMeInput extends OmitType(CreateUserInput, ['isAdmin']) {}
