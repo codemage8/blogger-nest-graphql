@@ -23,6 +23,10 @@ export class SessionService {
     return this.sessionModel.deleteMany({ user: userId }).exec()
   }
 
+  deleteOtherSessions(userId: Types.ObjectId | string, keepSessionId: Types.ObjectId | string) {
+    return this.sessionModel.deleteMany({ user: userId, _id: { $ne: keepSessionId } }).exec()
+  }
+
   delete(id: Types.ObjectId) {
     return this.sessionModel.deleteOne({ _id: id }).exec()
   }

@@ -40,7 +40,7 @@ export class UserService {
     return this.userModel.findOne({ email }).exec()
   }
 
-  async update(id: Types.ObjectId, input: CreateUserInput) {
+  async update(id: Types.ObjectId | string, input: CreateUserInput) {
     const newInput = { ...input }
 
     // Check the password existence

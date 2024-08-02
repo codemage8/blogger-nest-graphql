@@ -92,6 +92,10 @@ export class AuthService {
     })
   }
 
+  async logOutOthers(userId: Types.ObjectId | string, keepSessionId: Types.ObjectId | string) {
+    return this.sessionService.deleteOtherSessions(userId, keepSessionId)
+  }
+
   logOut(id: Types.ObjectId | string) {
     return this.sessionService.deleteAllForUser(id)
   }

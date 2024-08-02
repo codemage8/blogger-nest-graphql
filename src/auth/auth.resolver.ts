@@ -7,6 +7,7 @@ import { LoginUserInput } from '~/auth/dto/login.input'
 import { LoginUserResponse } from '~/auth/dto/login.response'
 import { RefreshTokenResponse } from '~/auth/dto/refresh-token.response'
 import { RegisterUserInput } from '~/auth/dto/register.input'
+import { UpdateMeInput } from '~/auth/dto/update-me.input'
 import { JwtAuthGuard } from '~/auth/jwt-auth.guard'
 import { JwtRefreshAuthGuard } from '~/auth/jwt-refresh-auth.guard'
 import { JwtPayload, JwtRefreshPayload } from '~/auth/strategy/types'
@@ -34,6 +35,16 @@ export class AuthResolver {
   @UseGuards(JwtRefreshAuthGuard)
   refreshToken(@Context('req') request: { user: JwtRefreshPayload }) {
     return this.authService.refreshToken(request.user)
+  }
+
+  @Mutation(() => User)
+  async updateMe(@Auth() auth: JwtPayload, @Args('updateMeInput') input: UpdateMeInput) {
+    const result = await this.userService.update(auth.id, input)
+    // whenever password was changed, logout all other users
+    if (input.password) {
+      await this.authService.logOutOthers(auth.id, auth.sessionId)
+    }
+    return result
   }
 
   @Query(() => User)
