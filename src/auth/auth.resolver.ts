@@ -1,13 +1,15 @@
-import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { UnauthorizedException, UseGuards } from '@nestjs/common'
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Types } from 'mongoose'
 import { Auth } from '~/auth/auth.decorator'
 import { AuthService } from '~/auth/auth.service'
 import { LoginUserInput } from '~/auth/dto/login.input'
 import { LoginUserResponse } from '~/auth/dto/login.response'
+import { RefreshTokenResponse } from '~/auth/dto/refresh-token.response'
 import { RegisterUserInput } from '~/auth/dto/register.input'
 import { JwtAuthGuard } from '~/auth/jwt-auth.guard'
-import { JwtPayload } from '~/auth/strategy/types'
+import { JwtRefreshAuthGuard } from '~/auth/jwt-refresh-auth.guard'
+import { JwtPayload, JwtRefreshPayload } from '~/auth/strategy/types'
 import { User } from '~/user/entities/user.entity'
 import { UserService } from '~/user/user.service'
 
@@ -28,9 +30,19 @@ export class AuthResolver {
     return this.authService.register(input)
   }
 
+  @Mutation(() => RefreshTokenResponse)
+  @UseGuards(JwtRefreshAuthGuard)
+  refreshToken(@Context('req') request: { user: JwtRefreshPayload }) {
+    return this.authService.refreshToken(request.user)
+  }
+
   @Query(() => User)
   @UseGuards(JwtAuthGuard)
-  me(@Auth() auth: JwtPayload) {
-    return this.userService.findById(new Types.ObjectId(auth.id))
+  async me(@Auth() auth: JwtPayload) {
+    const result = await this.userService.findById(new Types.ObjectId(auth.id))
+    if (!result) {
+      await this.authService.logOut(auth.id)
+      throw new UnauthorizedException()
+    }
   }
 }

@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { MongooseModule } from '@nestjs/mongoose'
 import { AuthModule } from '~/auth/auth.module'
 import { authConfig } from '~/auth/config/auth.config'
+import { CommonModule } from '~/common/common.module'
 import { AppConfig, appConfig } from '~/config/app.config'
 import { AllConfigType } from '~/config/config.type'
 import { PostModule } from '~/post/post.module'
@@ -29,7 +30,9 @@ const env = process.env.NODE_ENV || 'development'
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      context: ({ req }) => ({ req }),
     }),
+    CommonModule,
     SessionModule,
     UserModule,
     AuthModule,

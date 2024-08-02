@@ -19,11 +19,11 @@ export class SessionService {
     return this.sessionModel.findByIdAndUpdate(id, { hash }, { new: true })
   }
 
-  deleteAllForUser(userId: Types.ObjectId) {
-    return this.sessionModel.deleteMany({ user: userId })
+  deleteAllForUser(userId: Types.ObjectId | string) {
+    return this.sessionModel.deleteMany({ user: userId }).exec()
   }
 
   delete(id: Types.ObjectId) {
-    return this.sessionModel.deleteOne({ _id: id })
+    return this.sessionModel.deleteOne({ _id: id }).exec()
   }
 }
