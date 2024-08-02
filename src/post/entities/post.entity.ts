@@ -13,7 +13,7 @@ export class Post {
   _id: Types.ObjectId
 
   @Field(() => User)
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
   user?: User
 
   @Field()

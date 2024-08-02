@@ -6,10 +6,10 @@ export type SessionDocument = HydratedDocument<Session>
 
 @Schema()
 export class Session {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', index: true })
   user: User
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   hash: string
 }
 

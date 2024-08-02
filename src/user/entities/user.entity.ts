@@ -11,7 +11,7 @@ export class User {
   _id: Types.ObjectId
 
   @Field()
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   email: string
 
   @Field({ nullable: true })
