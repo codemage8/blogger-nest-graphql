@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config'
-import { IsEnum, IsString } from 'class-validator'
+import { IsEnum, IsInt, IsString, Min } from 'class-validator'
 import { validateConfig } from '~/utils/validate-config'
 
 export enum Environment {
@@ -11,6 +11,7 @@ export enum Environment {
 export interface AppConfig {
   appEnv: Environment
   mongodbUri: string
+  maxPageLimit: number
 }
 
 class VarsValidator {
@@ -19,6 +20,10 @@ class VarsValidator {
 
   @IsString()
   MONGODB_URI: string
+
+  @IsInt()
+  @Min(1)
+  MAX_PAGE_LIMIT: number
 }
 
 export const appConfig = registerAs<AppConfig>('app', () => {
@@ -26,5 +31,6 @@ export const appConfig = registerAs<AppConfig>('app', () => {
   return {
     appEnv: parsed.APP_ENV,
     mongodbUri: parsed.MONGODB_URI,
+    maxPageLimit: parsed.MAX_PAGE_LIMIT,
   }
 })

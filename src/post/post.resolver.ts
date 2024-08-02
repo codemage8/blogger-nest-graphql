@@ -3,6 +3,8 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { Auth } from '~/auth/auth.decorator'
 import { JwtAuthGuard } from '~/auth/jwt-auth.guard'
 import { JwtPayload } from '~/auth/strategy/types'
+import { SearchPostsInput } from '~/post/dto/search-posts.input'
+import { SearchPostsResponse } from '~/post/dto/search-posts.response'
 import { CreatePostInput } from './dto/create-post.input'
 import { Post } from './entities/post.entity'
 import { PostService } from './post.service'
@@ -49,5 +51,10 @@ export class PostResolver {
     }
     await this.postService.delete(id)
     return true
+  }
+
+  @Query(() => SearchPostsResponse)
+  async searchPosts(@Auth() auth: JwtPayload, @Args('searchPostsInput') input: SearchPostsInput) {
+    return this.postService.search(input)
   }
 }
