@@ -1,30 +1,18 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Simple Blog Backend API
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A basic blog backend API using [Nest](https://github.com/nestjs/nest), [Apollo Server](https://www.apollographql.com/docs/apollo-server/), and MongoDB
+
+
+## Technical Stack
+- [Nest](https://github.com/nestjs/nest)
+- [Apollo Server](https://www.apollographql.com/docs/apollo-server/)
+- [Mongoose](https://mongoosejs.com/)
+- Docker for Local MongoDB Instance
+- TypeScript
+- ESLint & Prettier
+- JWT for authentication
 
 ## Installation
 
@@ -34,40 +22,67 @@ $ npm install
 
 ## Running the app
 
+### Development Configuration
+
+- Create `.env` file with the following content
+  
+  ```env
+  MAX_PAGE_LIMIT=200
+  ```
+
+- Create `.env.development.local` file with following content
+  
+  ```env
+  MONGO_INITDB_ROOT_USERNAME=root
+  MONGO_INITDB_ROOT_PASSWORD=admin
+  MONGO_INITDB_DATABASE=blog
+  MONGODB_URI=mongodb://root:admin@localhost:27017/blog?authSource=admin
+
+  MONGO_INITDB_BLOG_ADMIN=admin@joi.blog.com
+
+  # Base64 encode of bcrypt of s3cr3t
+  MONGO_INITDB_BLOG_ADMIN_PASSWORD=JDJhJDEwJHMvc056M05mV0RoU3RmWVFQZFgyUy5KcDIyNGhEbFNxeGw3d21oREJ4NHRjNms2Z01UTERX
+
+  AUTH_JWT_SECRET=secret
+  AUTH_JWT_TOKEN_EXPIRES_IN=1h
+  AUTH_REFRESH_SECRET=secret_for_refresh
+  AUTH_REFRESH_TOKEN_EXPIRES_IN=60d
+  ```
+  
+  *You can change the variables, but make sure to match the `MONGODB_URI` with the `MONGO_INITDB_ROOT_USERNAME`, `MONGO_INITDB_ROOT_PASSWORD` and `MONGO_INITDB_DATABASE`*
+
+
+### Run local mongodb instance
+
+```bash
+$ npm run docker:dev
+```
+
+On the initialization of container, the container will run `mongodb-init.js` file in the project root folder.
+
+
+### Run
+
 ```bash
 # development
 $ npm run start
 
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+- Visit [https://localhost:3000/graphql](https://localhost:3000/graphql) to play
+  
+- Use the following `login` mutation to login
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```graphql
+mutation login($loginInput: LoginUserInput!) {
+  login(loginInput: $loginInput) {
+    token
+    refreshToken
+    user {
+      email
+    }
+  }
+}
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
