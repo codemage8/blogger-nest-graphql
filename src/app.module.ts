@@ -7,6 +7,7 @@ import { AuthModule } from '~/auth/auth.module'
 import { authConfig } from '~/auth/config/auth.config'
 import { AppConfig, appConfig } from '~/config/app.config'
 import { AllConfigType } from '~/config/config.type'
+import { PostModule } from '~/post/post.module'
 import { SessionModule } from '~/session/session.module'
 import { UserModule } from '~/user/user.module'
 
@@ -29,9 +30,10 @@ const env = process.env.NODE_ENV || 'development'
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    SessionModule,
     UserModule,
     AuthModule,
-    SessionModule,
+    PostModule,
   ],
 })
 export class AppModule {}

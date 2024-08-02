@@ -28,9 +28,11 @@ export class UserResolver {
   }
 
   @UseGuards(AdminAuthGuard)
+  @Mutation(() => Boolean)
   async deleteUser(@Args('id') id: string) {
     const _id = new Types.ObjectId(id)
     await this.sessionService.deleteAllForUser(_id)
-    return this.userService.delete(_id)
+    await this.userService.delete(_id)
+    return true
   }
 }
