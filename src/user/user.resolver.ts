@@ -5,6 +5,8 @@ import { AdminAuthGuard } from '~/auth/admin-auth.guard'
 import { JwtAuthGuard } from '~/auth/jwt-auth.guard'
 import { SessionService } from '~/session/session.service'
 import { CreateUserInput } from '~/user/dto/create-user-input'
+import { SearchUsersInput } from '~/user/dto/search-users.input'
+import { SearchUsersResponse } from '~/user/dto/search-users.response'
 import { User } from '~/user/entities/user.entity'
 import { UserService } from '~/user/user.service'
 
@@ -34,5 +36,13 @@ export class UserResolver {
     await this.sessionService.deleteAllForUser(_id)
     await this.userService.delete(_id)
     return true
+  }
+
+  @UseGuards(AdminAuthGuard)
+  @Query(() => SearchUsersResponse, {
+    description: 'Paginated user search, Only available for admin users',
+  })
+  async searchUsers(@Args('searchUsersInput') input: SearchUsersInput) {
+    return this.userService.search(input)
   }
 }

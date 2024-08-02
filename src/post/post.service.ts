@@ -3,8 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
 import { FilterQuery, Model, Types } from 'mongoose'
 import { AllConfigType } from '~/config/config.type'
-import { PostItem } from '~/post/dto/post-item'
-import { SortDirection } from '~/utils/dto/pagination'
+import { searchPaginated } from '~/utils/pagination'
 import { CreatePostInput } from './dto/create-post.input'
 import { SearchPostsInput } from './dto/search-posts.input'
 import { SearchPostsResponse } from './dto/search-posts.response'
@@ -39,7 +38,7 @@ export class PostService {
   }
 
   async search(input: SearchPostsInput): Promise<SearchPostsResponse> {
-    const { userId, title, before, after, sortDirection, limit, skip, cursor } = input
+    const { userId, title, before, after, limit } = input
     const filter: FilterQuery<Post> = {}
     if (userId) {
       filter.userId = userId
@@ -54,42 +53,13 @@ export class PostService {
       filter.title = { $regex: title, $options: 'i' }
     }
 
-    // mongodb id has timestamp, so we use it for sort direction.
-    // default is descending for the latest first
-    const _sortDirection = sortDirection ?? SortDirection.DESCENDING
-    const sort = { _id: _sortDirection }
-
-    // Always pick less than max page limit
-    const refinedLimit = Math.min(
-      this.configService.getOrThrow('app.maxPageLimit', { infer: true }),
-      limit
-    )
-
-    const totalCount = await this.postModel.find(filter).countDocuments()
-
-    // cursor based query
-    if (cursor) {
-      filter._id = _sortDirection === SortDirection.DESCENDING ? { $lte: cursor } : { $gte: cursor }
-    }
-
-    let query = this.postModel
-      .find<PostItem>(filter)
-      .sort(sort)
-      .limit(refinedLimit + 1)
-    if (skip && !cursor) {
-      query = query.skip(skip)
-    }
-    const items = await query.limit(refinedLimit + 1).exec()
-    const hasMore = items.length > refinedLimit
-    const nextCursor = hasMore ? items[refinedLimit]._id.toString() : undefined
-    if (hasMore) {
-      items.pop()
-    }
-
-    return {
-      totalCount,
-      items,
-      nextCursor,
-    }
+    return searchPaginated({
+      model: this.postModel,
+      filter,
+      input: {
+        ...input,
+        limit: Math.min(this.configService.getOrThrow('app.maxPageLimit', { infer: true }), limit),
+      },
+    })
   }
 }

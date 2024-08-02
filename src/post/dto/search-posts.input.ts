@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { PaginationInput } from '~/utils/dto/pagination'
+import { PaginationInput } from '~/utils/pagination'
 import { Trim } from '~/utils/transformer'
 
 @InputType()
